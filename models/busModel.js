@@ -23,6 +23,12 @@ const BusSchema = new Schema(
       ref: "UsersModel", // Reference to User schema
       required: true,
     },
+    trips: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "TripModel",
+      },
+    ],
   },
   { timestamps: true }
 );

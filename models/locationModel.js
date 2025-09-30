@@ -10,6 +10,11 @@ const LocationSchema = new Schema(
       required: true,
       unique: true,
     },
+    tripId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "TripModel", // link to your trip
+      required: true,
+    },
     latitude: {
       type: Number,
       required: true,

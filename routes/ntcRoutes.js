@@ -73,7 +73,7 @@ router.post("/routes", authMiddleware, createBusRoute);
  *       401:
  *         description: Unauthorized
  */
-router.get("/routes", authMiddleware, getAllBusRoutes);
+router.get("/routes", getAllBusRoutes);
 
 /**
  * @swagger

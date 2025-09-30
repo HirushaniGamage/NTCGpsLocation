@@ -1,4 +1,3 @@
-// config/swagger.js
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
@@ -12,25 +11,11 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000/api",
-      },
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT", // optional, just for clarity
-        },
-      },
-    },
-    security: [
-      {
-        bearerAuth: [], // Apply globally (all routes need JWT unless overridden)
+        url: "https://ntcgpslocation.onrender.com", // your deployed URL
       },
     ],
   },
-  apis: ["./routes/*.js"],
+  apis: ["./routes/*.js"], // path to your route files with Swagger comments
 };
 
 const swaggerSpec = swaggerJsdoc(options);

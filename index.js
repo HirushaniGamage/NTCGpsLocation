@@ -6,12 +6,13 @@ import ntcRoutes from "./routes/ntcRoutes.js";
 import operatorRoutes from "./routes/operatorRoutes.js";
 import commuterRoutes from "./routes/locationRoutes.js";
 import { swaggerUi, swaggerSpec } from "./config/swagger.js";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
+app.use(cors());
 app.use(express.json());
 
 // Swagger docs route

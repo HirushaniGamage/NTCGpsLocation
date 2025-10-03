@@ -1,5 +1,5 @@
 import BusModel from "../models/busModel.js";
-
+import TripModel from "../models/tripModel.js";
 // Create a new bus
 export const createBus = async (req, res) => {
   try {
@@ -42,7 +42,8 @@ export const getBusById = async (req, res) => {
   try {
     const bus = await BusModel.findById(req.params.id)
       .populate("route")
-      .populate("user");
+      .populate("user")
+      .populate("trips");
     if (!bus) {
       return res.status(404).json({ message: "Bus not found" });
     }
@@ -92,7 +93,8 @@ export const getBusByRegNo = async (req, res) => {
 
     const bus = await BusModel.findOne({ busRegNo })
       .populate("route")
-      .populate("user");
+      .populate("user")
+      .populate("trips");
     if (!bus) {
       return res
         .status(404)
@@ -143,5 +145,67 @@ export const deleteBusByRegNo = async (req, res) => {
     res.json({ message: "Bus deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+export const createTrip = async (req, res, next) => {
+  try {
+    const { busId, startTime, endTime } = req.body;
+
+    if (!busId || !startTime || !endTime) {
+      return res
+        .status(400)
+        .json({ message: "busId, startTime, and endTime are required" });
+    }
+
+    const bus = await BusModel.findById(busId);
+    if (!bus) return res.status(404).json({ message: "Bus not found" });
+
+    const timeRegex = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i;
+    if (!timeRegex.test(startTime) || !timeRegex.test(endTime)) {
+      return res
+        .status(400)
+        .json({ message: "Time must be in hh:mm AM/PM format" });
+    }
+
+    if (startTime >= endTime) {
+      return res
+        .status(400)
+        .json({ message: "endTime must be after startTime" });
+    }
+
+    const duplicateTrip = await TripModel.findOne({
+      bus: busId,
+      startTime,
+      endTime,
+    });
+    if (duplicateTrip)
+      return res
+        .status(400)
+        .json({ message: "Trip with same start and end time already exists" });
+
+    const trip = new TripModel({ bus: busId, startTime, endTime });
+    await trip.save();
+
+    bus.trips.push(trip._id);
+    await bus.save();
+
+    res.status(201).json(trip);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteAllTrips = async (req, res, next) => {
+  try {
+    const result = await TripModel.deleteMany({});
+    // Optional: clear trips array from all buses
+    await BusModel.updateMany({}, { $set: { trips: [] } });
+
+    res
+      .status(200)
+      .json({ message: `Deleted ${result.deletedCount} trips successfully` });
+  } catch (error) {
+    next(error);
   }
 };

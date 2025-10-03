@@ -1,9 +1,8 @@
 import express from "express";
 import {
   createTrip,
-  getTripsByBus,
-  getTodayTrips,
-} from "../controller/tripController.js";
+  deleteAllTrips,
+} from "../controller/operatorController.js";
 import { authMiddleware } from "../utils/authMiddleware.js";
 
 const router = express.Router();
@@ -57,44 +56,5 @@ const router = express.Router();
  *         description: Server error
  */
 router.post("/", authMiddleware, createTrip);
-
-/**
- * @swagger
- * /trips/bus/{busId}:
- *   get:
- *     summary: Get all trips for a specific bus
- *     tags: [Trip]
- *     parameters:
- *       - in: path
- *         name: busId
- *         required: true
- *         schema:
- *           type: string
- *         example: 68d503456e36ba974bedbb28
- *     responses:
- *       200:
- *         description: List of trips for the bus
- *       404:
- *         description: No trips found
- *       500:
- *         description: Server error
- */
-router.get("/bus/:busId", authMiddleware, getTripsByBus);
-
-/**
- * @swagger
- * /trips/today:
- *   get:
- *     summary: Get all trips scheduled for today
- *     tags: [Trip]
- *     responses:
- *       200:
- *         description: List of today’s trips
- *       404:
- *         description: No trips scheduled today
- *       500:
- *         description: Server error
- */
-router.get("/today", authMiddleware, getTodayTrips);
-
+router.delete("/all", deleteAllTrips);
 export default router;

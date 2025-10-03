@@ -5,6 +5,7 @@ import authRoutes from "./routes/authRoutes.js";
 import ntcRoutes from "./routes/ntcRoutes.js";
 import operatorRoutes from "./routes/operatorRoutes.js";
 import commuterRoutes from "./routes/locationRoutes.js";
+import tripRoutes from "./routes/tripRoutes.js";
 import { swaggerUi, swaggerSpec } from "./config/swagger.js";
 import cors from "cors";
 
@@ -23,7 +24,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/ntc", ntcRoutes);
 app.use("/api/operator", operatorRoutes);
 app.use("/api/commuter", commuterRoutes);
-
+app.use("/api/trip", tripRoutes);
 const mongoURI = process.env.MONGODB_URI;
 mongoose
   .connect(mongoURI)

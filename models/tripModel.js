@@ -9,23 +9,10 @@ const TripSchema = new Schema(
       ref: "BusModel", // Assuming you already have BusModel
       required: true,
     },
-    date: {
-      type: Date,
-      required: true,
-    },
-    startTime: {
-      type: String,
-      required: true, // e.g., "08:00"
-    },
-    endTime: {
-      type: String,
-      required: true, // e.g., "12:00"
-    },
+    startTime: { type: String, required: true }, // HH:mm
+    endTime: { type: String, required: true }, // HH:mm
   },
   { timestamps: true }
 );
-
-// Ensure only one trip per bus per day
-TripSchema.index({ bus: 1, date: 1 }, { unique: true });
 
 export default mongoose.model("TripModel", TripSchema);

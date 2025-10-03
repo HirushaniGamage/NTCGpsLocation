@@ -100,33 +100,24 @@ export const searchBusesByRoute = async (req, res) => {
 /**
  * Get the current location of a specific bus
  */
-export const getCurrentTripLocation = async (req, res, next) => {
+export const getCurrentTripLocation = async (req, res) => {
   try {
     const { busId } = req.params;
 
-    // Check if bus has only one trip today
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const trips = await TripModel.find({ bus: busId, date: today });
-    if (!trips.length)
-      return next(createError(404, "No trip found for this bus today"));
-
-    if (trips.length > 1)
-      return next(createError(400, "Multiple trips today, cannot determine"));
-
-    // Get latest location
-    const location = await LocationModel.findOne({ busId })
-      .sort({ updatedAt: -1 })
+    // Get the latest two location records for this bus
+    const locations = await LocationModel.find({ busId })
+      .sort({ updatedAt: -1 }) // Latest first
+      .limit(2)
       .lean();
 
-    if (!location) return next(createError(404, "No location found"));
+    if (!locations.length)
+      return res.status(404).json({ error: "No locations found for this bus" });
 
     res.status(200).json({
-      trip: trips[0],
-      location,
+      latest: locations[0],
+      previous: locations[1] || null, // null if only one record exists
     });
   } catch (error) {
-    next(error);
+    res.status(500).json({ error: error.message });
   }
 };
